@@ -1,7 +1,9 @@
 import mediapipe as mp
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
+from IPython.display import display, Image, clear_output
 import time
 
 from mediapipe.tasks import python
@@ -16,12 +18,18 @@ base_options = python.BaseOptions(model_asset_path=model_path)
 options = vision.GestureRecognizerOptions(base_options=base_options)
 recognizer = vision.GestureRecognizer.create_from_options(options)
 
+MARGIN = 10  # pixels
+FONT_SIZE = 1
+FONT_THICKNESS = 1
+HANDEDNESS_TEXT_COLOR = (255, 255, 255)  # white
+
 def draw_landmarks_on_image(rgb_image, detection_result):
     gesture_text = detection_result.gestures[0][0].category_name if detection_result.gestures else "No Gesture"
     # Draw the hand annotations on the image.
     hand_landmarks_list = detection_result.hand_landmarks
     handedness_list = detection_result.handedness
     annotated_image = np.copy(rgb_image)
+    print(gesture_text)
     # Loop through the detected hands to visualize.
     for idx in range(len(hand_landmarks_list)):
         hand_landmarks = hand_landmarks_list[idx]
@@ -49,12 +57,13 @@ def draw_landmarks_on_image(rgb_image, detection_result):
                     FONT_SIZE, HANDEDNESS_TEXT_COLOR, FONT_THICKNESS, cv2.LINE_AA)
     return annotated_image
 
+# Capture and display live frames from the default webcam inline in Jupyter
+
 cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     raise RuntimeError("Cannot open webcam (VideoCapture(0) failed)")
 
 start = time.time()
-
 try:
     while True:
         ret, frame = cap.read()
@@ -67,12 +76,16 @@ try:
         recognition_result = recognizer.recognize(mp_image)
         annotated_image = draw_landmarks_on_image(frame, recognition_result)
         # Encode as JPEG and display inline (fast and avoids creating new matplotlib figures)
-        #_, buf = cv2.imencode('.jpg', annotated_image)
+        _, buf = cv2.imencode('.jpg', annotated_image)
+        cv2.imshow("Gesture Image", annotated_image)
+        # display(Image(data=buf.tobytes()))
+        # clear_output(wait=True)
         time.sleep(0.03)  # ~30 FPS-ish; adjust as needed
 except KeyboardInterrupt:
     # Stop the loop with Ctrl+C in the notebook
     pass
 finally:
     cap.release()
+    cv2.destroyAllWindows()
     # Only for debuging:  # print(recognition_result)
     print("Webcam stopped and released.")
