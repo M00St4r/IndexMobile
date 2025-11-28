@@ -23,6 +23,8 @@ FONT_SIZE = 1
 FONT_THICKNESS = 1
 HANDEDNESS_TEXT_COLOR = (255, 255, 255)  # white
 
+cv2.namedWindow("Control")
+
 def draw_landmarks_on_image(rgb_image, detection_result):
     gesture_text = detection_result.gestures[0][0].category_name if detection_result.gestures else "No Gesture"
     # Draw the hand annotations on the image.
