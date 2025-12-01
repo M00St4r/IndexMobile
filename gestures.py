@@ -21,7 +21,8 @@ options = vision.GestureRecognizerOptions(base_options=base_options)
 recognizer = vision.GestureRecognizer.create_from_options(options)
 clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientsocket.connect(('10.10.10.10',8089))
-clientsocket.send("hello")
+message = 'hello'
+clientsocket.send(message.encode('utf-8'))
 
 MARGIN = 10  # pixels
 FONT_SIZE = 1
@@ -68,31 +69,33 @@ def draw_landmarks_on_image(rgb_image, detection_result):
             "dir": "none"
             }
         #Right/Left
-        if (detection_result.hand_landmarks[0][8].x > 0.7):
+        if (detection_result.hand_landmarks[0][8].x > 0.7 * width):
             print("Left")
             comands.update({"dir": "left"})
-        elif (detection_result.hand_landmarks[0][8].x < 0.3):
+        elif (detection_result.hand_landmarks[0][8].x < 0.3 * width):
             print("Right")
             comands.update({"dir":"right"})
         else: print ("no turning")
 
         #Forward/Backward
-        if (detection_result.hand_landmarks[0][8].y < 0.2):
+        if (detection_result.hand_landmarks[0][8].y < 0.2 * height):
             print("Forward")
             comands.update({"dir":"forward"})
-        elif (detection_result.hand_landmarks[0][8].y > 0.5):
+        elif (detection_result.hand_landmarks[0][8].y > 0.5 * height):
             print("Backward")
             comands.update({"dir":"backward"})
-        else: print ("no Forward/Backward")
+        else: print ("none")
 
         #Fast/Slow
         # speed= -abs(detection_result.hand_landmarks[0][8].z)
         # print(speed)
         # comands.update({"speed":""})
 
-        jSonComands = json.dumps(comands)
-
-        print(jSonComands)
+        
+        
+        message = json.dumps(comands)
+        clientsocket.send(message.encode('utf-8'))
+        print(message)
     return annotated_image
 
 # Capture and display live frames from the default webcam inline in Jupyter
@@ -132,3 +135,4 @@ finally:
     cv2.destroyAllWindows()
     # Only for debuging:  # print(recognition_result)
     print("Webcam stopped and released.")
+    clientsocket.send("close".encode('utf-8'))
