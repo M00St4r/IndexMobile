@@ -21,8 +21,8 @@ options = vision.GestureRecognizerOptions(base_options=base_options)
 recognizer = vision.GestureRecognizer.create_from_options(options)
 clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientsocket.connect(('10.10.10.10',8089))
-message = 'hello'
-clientsocket.send(message.encode('utf-8'))
+#message = 'hello'
+#clientsocket.send(message.encode('utf-8'))
 
 MARGIN = 10  # pixels
 FONT_SIZE = 1
@@ -68,28 +68,28 @@ def draw_landmarks_on_image(rgb_image, detection_result):
         comands={
             "dir": "none"
             }
+        
+        yPos = detection_result.hand_landmarks[0][8].y
+        xPos = detection_result.hand_landmarks[0][8].x
         #Right/Left
-        if (detection_result.hand_landmarks[0][8].x > 0.7 * width):
-            print("Left")
-            comands.update({"dir": "left"})
-        elif (detection_result.hand_landmarks[0][8].x < 0.3 * width):
-            print("Right")
-            comands.update({"dir":"right"})
-        else: print ("no turning")
+        if(0.5 > yPos > 0.2):
+            if (xPos > 0.7):
+                print("Left")
+                comands.update({"dir": "left"})
+            elif (xPos< 0.3):
+                print("Right")
+                comands.update({"dir":"right"})
+            else: comands.update({"dir":"none"})
 
         #Forward/Backward
-        if (detection_result.hand_landmarks[0][8].y < 0.2 * height):
-            print("Forward")
-            comands.update({"dir":"forward"})
-        elif (detection_result.hand_landmarks[0][8].y > 0.5 * height):
-            print("Backward")
-            comands.update({"dir":"backward"})
-        else: print ("none")
-
-        #Fast/Slow
-        # speed= -abs(detection_result.hand_landmarks[0][8].z)
-        # print(speed)
-        # comands.update({"speed":""})
+        if(0.3 < xPos < 0.7):
+            if (yPos < 0.2):
+                print("Forward")
+                comands.update({"dir":"forward"})
+            elif (yPos > 0.5):
+                print("Backward")
+                comands.update({"dir":"backward"})
+            else: comands.update({"dir":"none"})
 
         
         
