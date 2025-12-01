@@ -23,7 +23,7 @@ FONT_SIZE = 1
 FONT_THICKNESS = 1
 HANDEDNESS_TEXT_COLOR = (255, 255, 255)  # white
 
-cv2.namedWindow("Control")
+#cv2.namedWindow("Control")
 
 def draw_landmarks_on_image(rgb_image, detection_result):
     gesture_text = detection_result.gestures[0][0].category_name if detection_result.gestures else "No Gesture"
@@ -80,6 +80,8 @@ try:
         # Encode as JPEG and display inline (fast and avoids creating new matplotlib figures)
         _, buf = cv2.imencode('.jpg', annotated_image)
         cv2.imshow("Gesture Image", annotated_image)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
         # display(Image(data=buf.tobytes()))
         # clear_output(wait=True)
         time.sleep(0.03)  # ~30 FPS-ish; adjust as needed
