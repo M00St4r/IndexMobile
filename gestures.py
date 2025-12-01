@@ -36,7 +36,6 @@ def draw_landmarks_on_image(rgb_image, detection_result):
     for idx in range(len(hand_landmarks_list)):
         hand_landmarks = hand_landmarks_list[idx]
         handedness = handedness_list[idx]
-        print(hand_landmarks_list)
         # Draw the hand landmarks.
         hand_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
         hand_landmarks_proto.landmark.extend([
@@ -58,6 +57,22 @@ def draw_landmarks_on_image(rgb_image, detection_result):
         cv2.putText(annotated_image, f"{handedness[0].category_name} {gesture_text}",
                     (text_x, text_y), cv2.FONT_HERSHEY_DUPLEX,
                     FONT_SIZE, HANDEDNESS_TEXT_COLOR, FONT_THICKNESS, cv2.LINE_AA)
+        print(detection_result.hand_landmarks[0][8].y)
+
+        #Right/Left
+        if (detection_result.hand_landmarks[0][8].x > 0.7):
+            print("Right")
+        elif (detection_result.hand_landmarks[0][8].x < 0.3):
+            print("Left")
+        else: print ("no turning")
+
+        #Forward/Backward
+        if (detection_result.hand_landmarks[0][8].y < 0.2):
+            print("Forward")
+        elif (detection_result.hand_landmarks[0][8].y > 0.5):
+            print("Backward")
+        else: print ("no Forward/Backward")
+
     return annotated_image
 
 # Capture and display live frames from the default webcam inline in Jupyter
@@ -85,6 +100,9 @@ try:
             break
         # display(Image(data=buf.tobytes()))
         # clear_output(wait=True)
+
+        
+
         time.sleep(0.03)  # ~30 FPS-ish; adjust as needed
 except KeyboardInterrupt:
     # Stop the loop with Ctrl+C in the notebook
