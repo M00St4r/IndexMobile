@@ -2,6 +2,8 @@ import mediapipe as mp
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import socket
+import json
 
 from IPython.display import display, Image, clear_output
 import time
@@ -17,6 +19,9 @@ model_path = '../IndexMobile/models/gesture_recognizer.task'
 base_options = python.BaseOptions(model_asset_path=model_path)
 options = vision.GestureRecognizerOptions(base_options=base_options)
 recognizer = vision.GestureRecognizer.create_from_options(options)
+clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+clientsocket.connect(('10.10.10.10',8089))
+clientsocket.send("hello")
 
 MARGIN = 10  # pixels
 FONT_SIZE = 1
@@ -57,22 +62,37 @@ def draw_landmarks_on_image(rgb_image, detection_result):
         cv2.putText(annotated_image, f"{handedness[0].category_name} {gesture_text}",
                     (text_x, text_y), cv2.FONT_HERSHEY_DUPLEX,
                     FONT_SIZE, HANDEDNESS_TEXT_COLOR, FONT_THICKNESS, cv2.LINE_AA)
-        print(detection_result.hand_landmarks[0][8].y)
+        print(detection_result.hand_landmarks[0][8].z)
 
+        comands={
+            "dir": "none"
+            }
         #Right/Left
         if (detection_result.hand_landmarks[0][8].x > 0.7):
-            print("Right")
-        elif (detection_result.hand_landmarks[0][8].x < 0.3):
             print("Left")
+            comands.update({"dir": "left"})
+        elif (detection_result.hand_landmarks[0][8].x < 0.3):
+            print("Right")
+            comands.update({"dir":"right"})
         else: print ("no turning")
 
         #Forward/Backward
         if (detection_result.hand_landmarks[0][8].y < 0.2):
             print("Forward")
+            comands.update({"dir":"forward"})
         elif (detection_result.hand_landmarks[0][8].y > 0.5):
             print("Backward")
+            comands.update({"dir":"backward"})
         else: print ("no Forward/Backward")
 
+        #Fast/Slow
+        # speed= -abs(detection_result.hand_landmarks[0][8].z)
+        # print(speed)
+        # comands.update({"speed":""})
+
+        jSonComands = json.dumps(comands)
+
+        print(jSonComands)
     return annotated_image
 
 # Capture and display live frames from the default webcam inline in Jupyter
