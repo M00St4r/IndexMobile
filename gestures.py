@@ -32,12 +32,12 @@ HANDEDNESS_TEXT_COLOR = (255, 255, 255)  # white
 #cv2.namedWindow("Control")
 
 def draw_landmarks_on_image(rgb_image, detection_result):
-    gesture_text = detection_result.gestures[0][0].category_name if detection_result.gestures else "No Gesture"
+    #gesture_text = detection_result.gestures[0][0].category_name if detection_result.gestures else "No Gesture"
     # Draw the hand annotations on the image.
     hand_landmarks_list = detection_result.hand_landmarks
     handedness_list = detection_result.handedness
     annotated_image = np.copy(rgb_image)
-    print(gesture_text)
+    #print(gesture_text)
     # Loop through the detected hands to visualize.
     for idx in range(len(hand_landmarks_list)):
         hand_landmarks = hand_landmarks_list[idx]
@@ -57,12 +57,12 @@ def draw_landmarks_on_image(rgb_image, detection_result):
         height, width, _ = annotated_image.shape
         x_coordinates = [landmark.x for landmark in hand_landmarks]
         y_coordinates = [landmark.y for landmark in hand_landmarks]
-        text_x = int(min(x_coordinates) * width)
-        text_y = int(min(y_coordinates) * height) - MARGIN
+        #text_x = int(min(x_coordinates) * width)
+        #text_y = int(min(y_coordinates) * height) - MARGIN
         # Draw handedness (left or right hand) and detected gesture on the image.
-        cv2.putText(annotated_image, f"{handedness[0].category_name} {gesture_text}",
-                    (text_x, text_y), cv2.FONT_HERSHEY_DUPLEX,
-                    FONT_SIZE, HANDEDNESS_TEXT_COLOR, FONT_THICKNESS, cv2.LINE_AA)
+        #cv2.putText(annotated_image, f"{handedness[0].category_name} {gesture_text}",
+                    # (text_x, text_y), cv2.FONT_HERSHEY_DUPLEX,
+                    # FONT_SIZE, HANDEDNESS_TEXT_COLOR, FONT_THICKNESS, cv2.LINE_AA)
         print(detection_result.hand_landmarks[0][8].z)
 
         comands={
@@ -118,7 +118,15 @@ try:
         annotated_image = draw_landmarks_on_image(frame, recognition_result)
         # Encode as JPEG and display inline (fast and avoids creating new matplotlib figures)
         _, buf = cv2.imencode('.jpg', annotated_image)
-        cv2.imshow("Gesture Image", annotated_image)
+        
+        height, width, _ = annotated_image.shape
+        
+        source = np.float32([[0, 0], [width - 1, 0], [width - 1, height - 1], [0, height - 1]])
+        destination = np.float32([[width, 0], [0, 0], [0, height], [width, height]])
+        perspective_matrix = cv2.getPerspectiveTransform(source, destination)
+        warped = cv2.warpPerspective(annotated_image, perspective_matrix, (width, height))
+        
+        cv2.imshow("Gesture Image", warped)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         # display(Image(data=buf.tobytes()))
