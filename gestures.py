@@ -17,7 +17,13 @@ mp.__version__
 model_path = '../IndexMobile/models/gesture_recognizer.task'
 
 base_options = python.BaseOptions(model_asset_path=model_path)
-options = vision.GestureRecognizerOptions(base_options=base_options)
+#options = vision.GestureRecognizerOptions(base_options=base_options)
+options = vision.GestureRecognizerOptions(
+    base_options=base_options,
+    min_hand_detection_confidence=0.3,
+    min_hand_presence_confidence=0.3,
+    min_tracking_confidence=0.05,
+)
 recognizer = vision.GestureRecognizer.create_from_options(options)
 clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientsocket.connect(('10.10.10.10',8089))
