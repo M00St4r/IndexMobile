@@ -8,9 +8,15 @@ Control a Raspi Car Robot with gestures from your Webcam
 - when your connected open your browser and open connect to gopigo.com
 
 ## 2. Setup the Code
-- `gestures.py` will run on your PC, make sure you have it and all the libraries it depends on
+- `gestures.py` will run on your PC but needs some libraries to be installed:
+    - numpy
+    - opencv
+    - mediapipe
+    - matplotlib
+    - socket
+    - json
 - paste the `gestures_car.py` file to a custom directory on the Raspberry Pi
-- you need to paste the **json library** into that directory get it here[https://pypi.org/project/jsonlib/#files] and unpack it (you might need to unpack it twice)
+- you need to paste the **json library** into that directory get it [here](https://pypi.org/project/jsonlib/#files) and unpack it (you might need to unpack it twice)
 - Now you need to edit line **3** in `gestures_car.py` to point to the correct path where you pasted the json library `sys.path.append("your_custom_path/jsonlib-1.6.1")`
 
 ## 3. Run the Code on the Robot
