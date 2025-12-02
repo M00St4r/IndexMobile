@@ -1,6 +1,6 @@
 import socket
 import sys
-sys.path.append("/home/jupyter/guestureControll/jsonlib-1.6.1")
+sys.path.append("/home/jupyter/guestureControl/jsonlib-1.6.1")
 import json
 import time
 import easygopigo3 as easy
