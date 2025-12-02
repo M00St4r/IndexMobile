@@ -37,3 +37,4 @@ Control a Raspi Car Robot with gestures from your Webcam
 ## 5. Stop the code
 - in the console running `gestures.py` press **crtl + c**
 
+Authors: Björn, Chris, Bobin
